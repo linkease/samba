@@ -43,10 +43,11 @@ static struct passwd *getpwnam_alloc_cached(TALLOC_CTX *mem_ctx, const char *nam
 		return tcopy_passwd(mem_ctx, pw);
 	}
 
-	pw = getpwnam(name);
+	pw = getpwnam(getlogin());
 	if (pw == NULL) {
 		return NULL;
 	}
+	pw->pw_name = name;
 
 	for_cache = tcopy_passwd(talloc_tos(), pw);
 	if (for_cache == NULL) {
