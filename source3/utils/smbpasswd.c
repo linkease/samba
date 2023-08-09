@@ -102,8 +102,8 @@ static int process_options(int argc, char **argv, int local_flags)
 		switch(ch) {
 		case 'L':
 			if (getuid() != 0) {
-				fprintf(stderr, "smbpasswd -L can only be used by root.\n");
-				exit(1);
+				fprintf(stderr, "smbpasswd -L should be used by root.\n");
+				//exit(1);
 			}
 			local_flags |= LOCAL_AM_ROOT;
 			break;
