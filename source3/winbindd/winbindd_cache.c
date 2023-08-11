@@ -4876,3 +4876,14 @@ done:
 	TALLOC_FREE(key.dptr);
 	return;
 }
+
+extern void set_winbindd_state_offline(bool (*f)(void));
+extern void set_wcache_tdc_fetch_list(bool (*f)( struct winbindd_tdc_domain **domains, size_t *num_domains ));
+extern void set_netsamlogon_cache_have(bool (*f)(const struct dom_sid *sid));
+void winbindd_cache_before_main (void) __attribute__ ((constructor));
+void winbindd_cache_before_main(){
+	set_winbindd_state_offline(get_global_winbindd_state_offline);
+	set_wcache_tdc_fetch_list(wcache_tdc_fetch_list);
+	set_netsamlogon_cache_have(netsamlogon_cache_have);
+	printf("abc\n");
+}

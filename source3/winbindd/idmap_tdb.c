@@ -52,6 +52,8 @@ struct convert_fn_state {
 	bool failed;
 };
 
+extern struct winbindd_domain* call_find_domain_from_name(const char *domain_name);
+
 /*****************************************************************************
  For idmap conversion: convert one record to new format
  Ancient versions (eg 2.2.3a) of winbindd_idmap.tdb mapped DOMAINNAME/rid
@@ -83,7 +85,7 @@ static int convert_fn(struct db_record *rec, void *private_data)
 	fstrcpy(dom_name, (const char *)key.dptr);
 	*p++ = '/';
 
-	domain = find_domain_from_name(dom_name);
+	domain = call_find_domain_from_name(dom_name);
 	if (domain == NULL) {
 		/* We must delete the old record. */
 		DEBUG(0,("Unable to find domain %s\n", dom_name ));

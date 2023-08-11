@@ -2251,3 +2251,11 @@ fail:
 	TALLOC_FREE(xids);
 	return false;
 }
+
+extern void set_find_domain_from_name(struct winbindd_domain* (*f)(const char *domain_name));
+extern void set_find_our_domain(struct winbindd_domain* (*f)(void));
+void windinbd_util_before_main (void) __attribute__ ((constructor));
+void windinbd_util_before_main() {
+  set_find_domain_from_name(find_domain_from_name);
+  set_find_our_domain(find_our_domain);
+}

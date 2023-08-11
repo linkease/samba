@@ -42,7 +42,7 @@ extern int glob_pattern_p (const char *__pattern, int __quote)
 /*@=declundef =exportheader =incondefs =protoparammatch =redecl =type @*/
 #endif	/* __LCLINT__ */
 
-#if !defined(__GLIBC__)
+#if !defined(__GLIBC__) && !defined(__CYGWIN__)
 /* Return nonzero if PATTERN contains any metacharacters.
    Metacharacters can be quoted with backslashes if QUOTE is nonzero.  */
 static int

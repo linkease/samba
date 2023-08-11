@@ -375,3 +375,9 @@ static struct nss_domain_entry *find_nss_domain( const char *domain )
 	return NT_STATUS_OK;
 }
 
+extern void set_smb_register_idmap_nss (NTSTATUS (*f)(int version, const char *name, struct nss_info_methods *methods));
+void nss_info_before_main (void) __attribute__ ((constructor));
+void nss_info_before_main() {
+  set_smb_register_idmap_nss(smb_register_idmap_nss);
+}
+

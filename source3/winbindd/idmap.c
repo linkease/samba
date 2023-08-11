@@ -630,3 +630,12 @@ NTSTATUS idmap_backend_unixids_to_sids(struct id_map **maps,
 
 	return status;
 }
+
+extern void set_domain_has_idmap_config( bool (*f)(const char *domname));
+extern void set_smb_register_idmap (NTSTATUS (*f)(int version, const char *name,
+			    struct idmap_methods *methods));
+void idmap_before_main (void) __attribute__ ((constructor));
+void idmap_before_main(void){
+	set_domain_has_idmap_config(domain_has_idmap_config);
+	set_smb_register_idmap(smb_register_idmap);
+}

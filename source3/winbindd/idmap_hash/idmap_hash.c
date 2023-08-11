@@ -104,6 +104,8 @@ static void separate_hashes(uint32_t id,
 /*********************************************************************
  ********************************************************************/
 
+extern bool call_wcache_tdc_fetch_list( struct winbindd_tdc_domain **domains, size_t *num_domains );
+extern bool call_domain_has_idmap_config(const char *domname);
 static NTSTATUS idmap_hash_initialize(struct idmap_domain *dom)
 {
 	struct sid_hash_table *hashed_domains;
@@ -131,7 +133,7 @@ static NTSTATUS idmap_hash_initialize(struct idmap_domain *dom)
 		goto done;
 	}
 
-	if (!wcache_tdc_fetch_list(&dom_list, &num_domains)) {
+	if (!call_wcache_tdc_fetch_list(&dom_list, &num_domains)) {
 		nt_status = NT_STATUS_TRUSTED_DOMAIN_FAILURE;
 		BAIL_ON_NTSTATUS_ERROR(nt_status);
 	}
@@ -158,7 +160,7 @@ static NTSTATUS idmap_hash_initialize(struct idmap_domain *dom)
 		 * configurations.
 		 */
 
-		if (domain_has_idmap_config(dom_list[i].domain_name)) {
+		if (call_domain_has_idmap_config(dom_list[i].domain_name)) {
 			continue;
 		}
 
@@ -379,6 +381,9 @@ static const struct nss_info_methods hash_nss_methods = {
 	.close_fn       = nss_hash_close
 };
 
+extern NTSTATUS call_smb_register_idmap_nss(int version, const char *name, struct nss_info_methods *methods);
+extern NTSTATUS call_smb_register_idmap(int version, const char *name, struct idmap_methods *methods);
+
 /**********************************************************************
  Register with the idmap and idmap_nss subsystems. We have to protect
  against the idmap and nss_info interfaces being in a half-registered
@@ -392,7 +397,7 @@ NTSTATUS idmap_hash_init(TALLOC_CTX *ctx)
 	static NTSTATUS nss_status = NT_STATUS_UNSUCCESSFUL;
 
 	if ( !NT_STATUS_IS_OK(idmap_status) ) {
-		idmap_status =  smb_register_idmap(SMB_IDMAP_INTERFACE_VERSION,
+		idmap_status =  call_smb_register_idmap(SMB_IDMAP_INTERFACE_VERSION,
 						   "hash", &hash_idmap_methods);
 
 		if ( !NT_STATUS_IS_OK(idmap_status) ) {
@@ -402,7 +407,7 @@ NTSTATUS idmap_hash_init(TALLOC_CTX *ctx)
 	}
 
 	if ( !NT_STATUS_IS_OK(nss_status) ) {
-		nss_status = smb_register_idmap_nss(SMB_NSS_INFO_INTERFACE_VERSION,
+		nss_status = call_smb_register_idmap_nss(SMB_NSS_INFO_INTERFACE_VERSION,
 						    "hash", &hash_nss_methods);
 		if ( !NT_STATUS_IS_OK(nss_status) ) {
 			DEBUG(0,("Failed to register hash idmap nss plugin.\n"));

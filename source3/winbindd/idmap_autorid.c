@@ -291,6 +291,9 @@ static NTSTATUS idmap_autorid_id_to_sid(struct autorid_global_config *cfg,
  Single sid to id lookup function.
 **********************************/
 
+extern struct winbindd_domain* call_find_our_domain(void);
+extern bool call_netsamlogon_cache_have(const struct dom_sid *sid);
+
 static NTSTATUS idmap_autorid_sid_to_id_rid(
 					uint32_t rangesize,
 					uint32_t low_id,
@@ -620,7 +623,7 @@ static NTSTATUS idmap_autorid_sid_to_id(struct idmap_tdb_common_context *common,
 		 * add a mapping for.
 		 */
 
-		domain = find_our_domain();
+		domain = call_find_our_domain();
 		if ((domain != NULL) &&
 		    dom_sid_equal(&domain->sid, &domainsid)) {
 			goto allocate;
@@ -662,7 +665,7 @@ static NTSTATUS idmap_autorid_sid_to_id(struct idmap_tdb_common_context *common,
 	 * We used to check the list of trusted domains we received
 	 * from "our" dc, but this is not reliable enough.
 	 */
-	if (netsamlogon_cache_have(&domainsid)) {
+	if (call_netsamlogon_cache_have(&domainsid)) {
 		goto allocate;
 	}
 
