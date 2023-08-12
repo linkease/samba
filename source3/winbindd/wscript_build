@@ -2,7 +2,7 @@
 
 bld.SAMBA3_LIBRARY('idmap',
                    source='idmap.c idmap_util.c',
-                   deps='samba-util pdb',
+                   deps='samba-util pdb IDMAP_FUNCS',
                    allow_undefined_symbols=True,
                    private_library=True)
 

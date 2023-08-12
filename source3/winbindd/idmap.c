@@ -298,10 +298,11 @@ static const struct idmap_methods *get_methods(const char *name)
 	return NULL;
 }
 
+extern bool call_winbindd_state_offline(void);
 bool idmap_is_offline(void)
 {
 	return ( lp_winbind_offline_logon() &&
-	     get_global_winbindd_state_offline() );
+	     call_winbindd_state_offline() );
 }
 
 /**********************************************************************

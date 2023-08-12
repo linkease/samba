@@ -1094,6 +1094,12 @@ static struct proc_fd_pattern {
 
 static const char *proc_fd_pattern;
 
+#ifdef __CYGWIN__
+bool sys_have_proc_fds(void)
+{
+  return false;
+}
+#else
 bool sys_have_proc_fds(void)
 {
 	static bool checked;
@@ -1119,6 +1125,7 @@ bool sys_have_proc_fds(void)
 	checked = true;
 	return have_proc_fds;
 }
+#endif
 
 const char *sys_proc_fd_path(int fd, char *buf, int bufsize)
 {
