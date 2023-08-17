@@ -20,6 +20,7 @@
 */
 
 #include "winbind_client.h"
+#include "winbind_nss_linux.h"
 
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
