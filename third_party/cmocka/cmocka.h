@@ -124,7 +124,13 @@ typedef uintmax_t LargestIntegralType;
 #   if __WORDSIZE == 64
       typedef unsigned long int uintptr_t;
 #   else
-      typedef unsigned int uintptr_t;
+
+#     if defined(__aarch64__) || defined(_M_ARM64)
+      // Not need in aarch64
+#     else
+        typedef unsigned int uintptr_t;
+#     endif
+
 #   endif /* __WORDSIZE == 64 */
 #  else /* __WORDSIZE */
 #   if defined(_LP64) || defined(_I32LPx)
