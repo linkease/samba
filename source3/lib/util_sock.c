@@ -928,9 +928,15 @@ int create_pipe_sock(const char *socket_dir,
 
 	old_umask = umask(0);
 
+#ifdef __CYGWIN__
+	ok = directory_create_or_exist(socket_dir,
+					      sec_initial_uid(),
+					      dir_perms);
+#else
 	ok = directory_create_or_exist_strict(socket_dir,
 					      sec_initial_uid(),
 					      dir_perms);
+#endif
 	if (!ok) {
 		goto out_close;
 	}
