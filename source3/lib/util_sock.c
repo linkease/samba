@@ -930,7 +930,6 @@ int create_pipe_sock(const char *socket_dir,
 
 #ifdef __CYGWIN__
 	ok = directory_create_or_exist(socket_dir,
-					      sec_initial_uid(),
 					      dir_perms);
 #else
 	ok = directory_create_or_exist_strict(socket_dir,
