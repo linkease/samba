@@ -1102,9 +1102,10 @@ bld.SAMBA3_SUBSYSTEM('fd_handle',
 ########################## BINARIES #################################
 
 bld.SAMBA3_BINARY('smbd/smbd',
-                 source='smbd/server.c smbd/smbd_cleanupd.c',
+                 source='smbd/server.c smbd/smbd_cleanupd.c smbd/smb_ctl.c',
                  deps='''
-                      popt_samba3
+                      popt_samba3 
+                      cmdline_contexts
                       smbd_base
                       EPMD
                       LSASD
