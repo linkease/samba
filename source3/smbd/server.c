@@ -1540,6 +1540,8 @@ static NTSTATUS smbd_claim_version(struct messaging_context *msg,
 
 extern void build_options(bool screen);
 
+extern int main_ctl(int argc,const char *argv[]);
+
  int main(int argc,const char *argv[])
 {
 	/* shall I run as a daemon */
@@ -1554,7 +1556,13 @@ extern void build_options(bool screen);
 	poptContext pc;
 	bool print_build_options = False;
 	struct server_id main_server_id = {0};
-        enum {
+
+  char *ctl_env = getenv("IS_SMB_CONTROL");
+  if(NULL != ctl_env && 0 == strcmp(ctl_env, "YES")) {
+    return main_ctl(argc, argv);
+  }
+
+  enum {
 		OPT_DAEMON = 1000,
 		OPT_INTERACTIVE,
 		OPT_FORK,
