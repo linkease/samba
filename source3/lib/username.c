@@ -36,6 +36,9 @@ static struct passwd *uname_string_combinations2(char *s, TALLOC_CTX *mem_ctx, i
 static struct passwd *getpwnam_alloc_cached(TALLOC_CTX *mem_ctx, const char *name)
 {
 	struct passwd *pw, *for_cache;
+#ifdef __APPLE__
+        uid_t uid;
+#endif
 
 	pw = (struct passwd *)memcache_lookup_talloc(
 		NULL, GETPWNAM_CACHE, data_blob_string_const_null(name));
@@ -43,7 +46,12 @@ static struct passwd *getpwnam_alloc_cached(TALLOC_CTX *mem_ctx, const char *nam
 		return tcopy_passwd(mem_ctx, pw);
 	}
 
+#ifdef __APPLE__
+        uid = geteuid();
+        pw = getpwuid(uid); 
+#else
 	pw = getpwnam(getlogin());
+#endif
 	if (pw == NULL) {
 		return NULL;
 	}
