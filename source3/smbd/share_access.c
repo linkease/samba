@@ -112,6 +112,10 @@ static bool token_contains_name(TALLOC_CTX *mem_ctx,
 		return nt_token_check_sid( &sid, token );
 	}
 
+	if ( 0 != strcmp(username, name) ) {
+		return False;
+	}
+
 	if (!do_group_checks(&name, &prefix)) {
 		if (!lookup_name_smbconf(mem_ctx, name, LOOKUP_NAME_ALL,
 				 NULL, NULL, &sid, &type)) {
