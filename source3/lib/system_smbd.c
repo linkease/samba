@@ -182,6 +182,7 @@ static int sys_getgrouplist(const char *user, gid_t gid, gid_t *groups, int *grp
 	(void)winbind_off();
 
 #ifdef HAVE_GETGROUPLIST
+#error getgrouplist
 	retval = getgrouplist(user, gid, groups, grpcnt);
 #else
 #ifdef HAVE_GETGRSET

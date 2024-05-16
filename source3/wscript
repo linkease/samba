@@ -403,7 +403,6 @@ getauthuid
 getcwd
 getgrent
 getgrnam
-getgrouplist
 getgrset
 getmntent
 getpagesize

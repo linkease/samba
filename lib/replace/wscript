@@ -461,7 +461,7 @@ def configure(conf):
     conf.CHECK_FUNCS('syslog')
     conf.CHECK_FUNCS('gai_strerror get_current_dir_name')
     conf.CHECK_FUNCS('timegm getifaddrs freeifaddrs mmap setgroups syscall setsid')
-    conf.CHECK_FUNCS('getgrent_r getgrgid_r getgrnam_r getgrouplist getpagesize')
+    conf.CHECK_FUNCS('getgrent_r getgrgid_r getgrnam_r getpagesize')
     conf.CHECK_FUNCS('getpwent_r getpwnam_r getpwuid_r epoll_create')
     conf.CHECK_FUNCS('port_create')
     conf.CHECK_FUNCS('getprogname')
