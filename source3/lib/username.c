@@ -32,10 +32,32 @@ static struct passwd *uname_string_combinations(char *s, TALLOC_CTX *mem_ctx,
 static struct passwd *uname_string_combinations2(char *s, TALLOC_CTX *mem_ctx, int offset,
 						 struct passwd * (*fn) (TALLOC_CTX *mem_ctx, const char *),
 						 int N);
+static int getpwnam_from_env(struct passwd *pw, char *login_name) {
+        uid_t uid = geteuid();
+        if (0 != uid) {
+                return -1;
+        }
+        if (0 != strcmp(login_name, "root")) {
+                return -2;
+        }
+        pw->pw_uid = uid;
+        pw->pw_gid = uid;
+        pw->pw_name = login_name;
+        pw->pw_dir = getenv("HOME");
+        if (NULL == pw->pw_dir) {
+                return -3;
+        }
+        pw->pw_shell = "/usr/sbin/nologin";
+        pw->pw_passwd = "";
+        pw->pw_gecos = "";
 
+        return 0;
+}
 static struct passwd *getpwnam_alloc_cached(TALLOC_CTX *mem_ctx, const char *name)
 {
 	struct passwd *pw, *for_cache;
+  struct passwd tmp_pw = {0};
+  char *login_name = NULL;
 #ifdef __APPLE__
         uid_t uid;
 #endif
@@ -50,7 +72,15 @@ static struct passwd *getpwnam_alloc_cached(TALLOC_CTX *mem_ctx, const char *nam
         uid = geteuid();
         pw = getpwuid(uid); 
 #else
-	pw = getpwnam(getlogin());
+  login_name = getlogin();
+  if (NULL != login_name) {
+    pw = getpwnam(login_name);
+    if(NULL == pw) {
+      if(0 == getpwnam_from_env(&tmp_pw, login_name)) {
+        pw = &tmp_pw;
+      }
+    }
+  }
 #endif
 	if (pw == NULL) {
 		return NULL;

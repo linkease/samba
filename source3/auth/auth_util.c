@@ -1066,8 +1066,10 @@ NTSTATUS auth3_session_info_create(TALLOC_CTX *mem_ctx,
 		pwd = getpwuid_alloc(frame, session_info->unix_token->uid);
 		if (pwd == NULL) {
 			TALLOC_FREE(frame);
+			DEBUG(5, ("getpwuid not found\n"));
 			return NT_STATUS_INVALID_TOKEN;
 		}
+		DEBUG(5, ("getpwuid found\n"));
 		if (!found_hint_gid) {
 			session_info->unix_token->gid = pwd->pw_gid;
 		}

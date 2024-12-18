@@ -76,6 +76,28 @@ struct passwd *getpwnam_alloc(TALLOC_CTX *mem_ctx, const char *name)
 	return tcopy_passwd(mem_ctx, temp);
 }
 
+static int getpwnam_from_env(struct passwd *pw, char *login_name) {
+        uid_t uid = geteuid();
+        if (0 != uid) {
+                return -1;
+        }
+        if (0 != strcmp(login_name, "root")) {
+                return -2;
+        }
+        pw->pw_uid = uid;
+        pw->pw_gid = uid;
+        pw->pw_name = login_name;
+        pw->pw_dir = getenv("HOME");
+        if (NULL == pw->pw_dir) {
+                return -3;
+        }
+        pw->pw_shell = "/usr/sbin/nologin";
+        pw->pw_passwd = "";
+        pw->pw_gecos = "";
+
+        return 0;
+}
+
 /****************************************************************************
  talloc'ed version of getpwuid.
 ****************************************************************************/
@@ -83,8 +105,16 @@ struct passwd *getpwnam_alloc(TALLOC_CTX *mem_ctx, const char *name)
 struct passwd *getpwuid_alloc(TALLOC_CTX *mem_ctx, uid_t uid)
 {
 	struct passwd *temp;
+  struct passwd tmp_pw = {0};
+  char *login_name = NULL;
 
 	temp = getpwuid(uid);
+  if(NULL == temp) {
+      login_name = getlogin();
+      if(0 == getpwnam_from_env(&tmp_pw, login_name)) {
+        temp = &tmp_pw;
+      }
+  }
 	
 	if (!temp) {
 #if 0
